@@ -1,45 +1,64 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
+
+interface GetResponseData {
+  message: string;
+}
+
+interface PostResponseData {
+  name: string;
+  message: string;
+}
+
+interface ErrorResponse {
+  error: string;
+}
 
 export default function Home() {
-  const [getResponse, setGetResponse] = useState<any>(null);
-  const [postResponse, setPostResponse] = useState<any>(null);
+  const [getResponse, setGetResponse] = useState<
+    GetResponseData | ErrorResponse | null
+  >(null);
+  const [postResponse, setPostResponse] = useState<
+    PostResponseData | ErrorResponse | null
+  >(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleGetRequest = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/hello');
+      const response = await fetch("/api/hello");
       const data = await response.json();
       setGetResponse(data);
     } catch (error) {
-      setGetResponse({ error: 'Failed to fetch' });
+      console.error("GET request failed:", error);
+      setGetResponse({ error: "Failed to fetch" });
     }
     setLoading(false);
   };
 
   const handlePostRequest = async () => {
     if (!name || !message) {
-      alert('Please fill in both name and message fields');
+      alert("Please fill in both name and message fields");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('/api/hello', {
-        method: 'POST',
+      const response = await fetch("/api/hello", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, message }),
       });
       const data = await response.json();
       setPostResponse(data);
     } catch (error) {
-      setPostResponse({ error: 'Failed to post' });
+      console.error("POST request failed:", error);
+      setPostResponse({ error: "Failed to post" });
     }
     setLoading(false);
   };
@@ -47,11 +66,12 @@ export default function Home() {
   const testConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/test');
+      const response = await fetch("/api/test");
       const data = await response.json();
       alert(`Connection test: ${data.status} - ${data.message}`);
     } catch (error) {
-      alert('Connection failed!');
+      console.error("Connection test failed:", error);
+      alert("Connection failed!");
     }
     setLoading(false);
   };
@@ -59,18 +79,18 @@ export default function Home() {
   return (
     <div className="container">
       <h1>Next.js + FastAPI Test App</h1>
-      
+
       <div className="section">
         <h2>Connection Test</h2>
         <button onClick={testConnection} disabled={loading}>
-          {loading ? 'Testing...' : 'Test Connection'}
+          {loading ? "Testing..." : "Test Connection"}
         </button>
       </div>
 
       <div className="section">
         <h2>GET Request Test</h2>
         <button onClick={handleGetRequest} disabled={loading}>
-          {loading ? 'Loading...' : 'Send GET Request'}
+          {loading ? "Loading..." : "Send GET Request"}
         </button>
         {getResponse && (
           <div className="response">
@@ -96,7 +116,7 @@ export default function Home() {
             onChange={(e) => setMessage(e.target.value)}
           />
           <button onClick={handlePostRequest} disabled={loading}>
-            {loading ? 'Sending...' : 'Send POST Request'}
+            {loading ? "Sending..." : "Send POST Request"}
           </button>
         </div>
         {postResponse && (
