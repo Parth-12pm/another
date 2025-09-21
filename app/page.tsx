@@ -94,7 +94,7 @@ export default function Home() {
     try {
       const response = await fetch(`/api/verify-income/${barcode_id}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setCertificateResponse(data);
       } else {
@@ -118,15 +118,19 @@ export default function Home() {
     try {
       const response = await fetch(`/verify-migration/${migration_barcode_id}`);
       const data = await response.json();
-      
+
       if (response.ok) {
         setMigrationCertResponse(data);
       } else {
-        setMigrationCertResponse({ error: data.detail || "Verification failed" });
+        setMigrationCertResponse({
+          error: data.detail || "Verification failed",
+        });
       }
     } catch (error) {
       console.error("Migration certificate verification failed:", error);
-      setMigrationCertResponse({ error: "Failed to verify migration certificate" });
+      setMigrationCertResponse({
+        error: "Failed to verify migration certificate",
+      });
     }
     setLoading(false);
   };
@@ -144,53 +148,98 @@ export default function Home() {
     setLoading(false);
   };
 
-  const renderCertificateResponse = (response: CertificateResponse | ErrorResponse | null, title: string) => {
+  const renderCertificateResponse = (
+    response: CertificateResponse | ErrorResponse | null,
+    title: string
+  ) => {
     if (!response) return null;
 
-    if ('error' in response || 'detail' in response) {
+    // Type guard for error response
+    if ("error" in response || "detail" in response) {
       return (
-        <div className="response error">
-          <h3>{title} Error:</h3>
-          <p>{response.error || response.detail}</p>
+        <div className="mt-6 p-5 bg-red-50 border border-red-200 rounded-lg">
+          <h3 className="text-lg font-semibold text-red-800 mb-2">
+            {title} Error:
+          </h3>
+          <p className="text-red-700 font-medium">
+            {response.error || response.detail}
+          </p>
         </div>
       );
     }
 
+    // Now TypeScript knows response is CertificateResponse
+    const certificateData = response as CertificateResponse;
+
     return (
-      <div className="response success">
-        <h3>{title} Result:</h3>
-        <div className="certificate-details">
-          <div className="detail-row">
-            <span className="label">Status:</span>
-            <span className="value">{response.status}</span>
+      <div className="mt-6 p-5 bg-green-50 border border-green-200 rounded-lg">
+        <h3 className="text-lg font-semibold text-green-800 mb-4">
+          {title} Result:
+        </h3>
+        <div className="space-y-3">
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Status:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.status}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Barcode ID:</span>
-            <span className="value">{response.barcodeId}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Barcode ID:
+            </span>
+            <span className="text-gray-600 flex-1 font-mono">
+              {certificateData.barcodeId}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Certificate Name:</span>
-            <span className="value">{response.certificateName}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Certificate Name:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.certificateName}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Applicant Name:</span>
-            <span className="value">{response.applicantName}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Applicant Name:
+            </span>
+            <span className="text-gray-600 flex-1 font-semibold">
+              {certificateData.applicantName}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Signatory Designation:</span>
-            <span className="value">{response.designationOfSignatory}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Signatory Designation:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.designationOfSignatory}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Taluka:</span>
-            <span className="value">{response.talukaOfSignatory}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Taluka:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.talukaOfSignatory}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">District:</span>
-            <span className="value">{response.districtOfSignatory}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              District:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.districtOfSignatory}
+            </span>
           </div>
-          <div className="detail-row">
-            <span className="label">Date Applied:</span>
-            <span className="value">{response.dateAppliedOn}</span>
+          <div className="flex flex-col md:flex-row py-2 border-b border-gray-200 last:border-b-0">
+            <span className="font-semibold text-gray-700 md:min-w-48 md:mr-4 mb-1 md:mb-0">
+              Date Applied:
+            </span>
+            <span className="text-gray-600 flex-1">
+              {certificateData.dateAppliedOn}
+            </span>
           </div>
         </div>
       </div>
@@ -204,7 +253,9 @@ export default function Home() {
       </h1>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-6">Connection Test</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+          Connection Test
+        </h2>
         <button
           onClick={testConnection}
           disabled={loading}
@@ -215,7 +266,9 @@ export default function Home() {
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-6">Income Certificate Verification</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+          Income Certificate Verification
+        </h2>
         <div className="flex flex-col space-y-4 mb-6">
           <input
             type="text"
@@ -236,7 +289,9 @@ export default function Home() {
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-6">Migration Certificate Verification</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+          Migration Certificate Verification
+        </h2>
         <div className="flex flex-col space-y-4 mb-6">
           <input
             type="text"
@@ -253,11 +308,16 @@ export default function Home() {
             {loading ? "Verifying..." : "Verify Migration Certificate"}
           </button>
         </div>
-        {renderCertificateResponse(migrationCertResponse, "Migration Certificate")}
+        {renderCertificateResponse(
+          migrationCertResponse,
+          "Migration Certificate"
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-6">API Test (GET Request)</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+          API Test (GET Request)
+        </h2>
         <button
           onClick={handleGetRequest}
           disabled={loading}
@@ -267,7 +327,9 @@ export default function Home() {
         </button>
         {getResponse && (
           <div className="mt-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">GET Response:</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              GET Response:
+            </h3>
             <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
               {JSON.stringify(getResponse, null, 2)}
             </pre>
@@ -276,7 +338,9 @@ export default function Home() {
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
-        <h2 className="text-2xl font-semibold text-blue-600 mb-6">API Test (POST Request)</h2>
+        <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+          API Test (POST Request)
+        </h2>
         <div className="flex flex-col space-y-4 mb-6">
           <input
             type="text"
@@ -302,15 +366,15 @@ export default function Home() {
         </div>
         {postResponse && (
           <div className="mt-6 p-5 bg-gray-50 border border-gray-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">POST Response:</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              POST Response:
+            </h3>
             <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
               {JSON.stringify(postResponse, null, 2)}
             </pre>
           </div>
         )}
       </div>
-
-
     </div>
   );
 }
